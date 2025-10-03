@@ -40,16 +40,12 @@ from ._base_client import (
     make_request_options,
 )
 from .resources.api import api
-from .resources.auth import auth
-from .resources.openai import openai
 
 __all__ = ["Timeout", "Transport", "ProxiesTypes", "RequestOptions", "APITest", "AsyncAPITest", "Client", "AsyncClient"]
 
 
 class APITest(SyncAPIClient):
-    auth: auth.AuthResource
     api: api.APIResource
-    openai: openai.OpenAIResource
     health: health.HealthResource
     with_raw_response: APITestWithRawResponse
     with_streaming_response: APITestWithStreamedResponse
@@ -104,9 +100,7 @@ class APITest(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.auth = auth.AuthResource(self)
         self.api = api.APIResource(self)
-        self.openai = openai.OpenAIResource(self)
         self.health = health.HealthResource(self)
         self.with_raw_response = APITestWithRawResponse(self)
         self.with_streaming_response = APITestWithStreamedResponse(self)
@@ -255,9 +249,7 @@ class APITest(SyncAPIClient):
 
 
 class AsyncAPITest(AsyncAPIClient):
-    auth: auth.AsyncAuthResource
     api: api.AsyncAPIResource
-    openai: openai.AsyncOpenAIResource
     health: health.AsyncHealthResource
     with_raw_response: AsyncAPITestWithRawResponse
     with_streaming_response: AsyncAPITestWithStreamedResponse
@@ -312,9 +304,7 @@ class AsyncAPITest(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.auth = auth.AsyncAuthResource(self)
         self.api = api.AsyncAPIResource(self)
-        self.openai = openai.AsyncOpenAIResource(self)
         self.health = health.AsyncHealthResource(self)
         self.with_raw_response = AsyncAPITestWithRawResponse(self)
         self.with_streaming_response = AsyncAPITestWithStreamedResponse(self)
@@ -464,9 +454,7 @@ class AsyncAPITest(AsyncAPIClient):
 
 class APITestWithRawResponse:
     def __init__(self, client: APITest) -> None:
-        self.auth = auth.AuthResourceWithRawResponse(client.auth)
         self.api = api.APIResourceWithRawResponse(client.api)
-        self.openai = openai.OpenAIResourceWithRawResponse(client.openai)
         self.health = health.HealthResourceWithRawResponse(client.health)
 
         self.get_status = to_raw_response_wrapper(
@@ -476,9 +464,7 @@ class APITestWithRawResponse:
 
 class AsyncAPITestWithRawResponse:
     def __init__(self, client: AsyncAPITest) -> None:
-        self.auth = auth.AsyncAuthResourceWithRawResponse(client.auth)
         self.api = api.AsyncAPIResourceWithRawResponse(client.api)
-        self.openai = openai.AsyncOpenAIResourceWithRawResponse(client.openai)
         self.health = health.AsyncHealthResourceWithRawResponse(client.health)
 
         self.get_status = async_to_raw_response_wrapper(
@@ -488,9 +474,7 @@ class AsyncAPITestWithRawResponse:
 
 class APITestWithStreamedResponse:
     def __init__(self, client: APITest) -> None:
-        self.auth = auth.AuthResourceWithStreamingResponse(client.auth)
         self.api = api.APIResourceWithStreamingResponse(client.api)
-        self.openai = openai.OpenAIResourceWithStreamingResponse(client.openai)
         self.health = health.HealthResourceWithStreamingResponse(client.health)
 
         self.get_status = to_streamed_response_wrapper(
@@ -500,9 +484,7 @@ class APITestWithStreamedResponse:
 
 class AsyncAPITestWithStreamedResponse:
     def __init__(self, client: AsyncAPITest) -> None:
-        self.auth = auth.AsyncAuthResourceWithStreamingResponse(client.auth)
         self.api = api.AsyncAPIResourceWithStreamingResponse(client.api)
-        self.openai = openai.AsyncOpenAIResourceWithStreamingResponse(client.openai)
         self.health = health.AsyncHealthResourceWithStreamingResponse(client.health)
 
         self.get_status = async_to_streamed_response_wrapper(
