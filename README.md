@@ -32,7 +32,7 @@ client = APITest(
     api_key=os.environ.get("API_TEST_API_KEY"),  # This is the default and can be omitted
 )
 
-response = client.auth.login.github()
+response = client.get_status()
 ```
 
 While you can provide an `api_key` keyword argument,
@@ -55,7 +55,7 @@ client = AsyncAPITest(
 
 
 async def main() -> None:
-    response = await client.auth.login.github()
+    response = await client.get_status()
 
 
 asyncio.run(main())
@@ -87,7 +87,7 @@ async def main() -> None:
         api_key="My API Key",
         http_client=DefaultAioHttpClient(),
     ) as client:
-        response = await client.auth.login.github()
+        response = await client.get_status()
 
 
 asyncio.run(main())
@@ -112,7 +112,7 @@ from api_test import APITest
 
 client = APITest()
 
-client.api.v1.audio_inference(
+client.api.v1.files.multipart.init(
     file=Path("/path/to/file"),
 )
 ```
@@ -135,7 +135,7 @@ from api_test import APITest
 client = APITest()
 
 try:
-    client.auth.login.github()
+    client.get_status()
 except api_test.APIConnectionError as e:
     print("The server could not be reached")
     print(e.__cause__)  # an underlying Exception, likely raised within httpx.
@@ -178,7 +178,7 @@ client = APITest(
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).auth.login.github()
+client.with_options(max_retries=5).get_status()
 ```
 
 ### Timeouts
@@ -201,7 +201,7 @@ client = APITest(
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).auth.login.github()
+client.with_options(timeout=5.0).get_status()
 ```
 
 On timeout, an `APITimeoutError` is thrown.
@@ -242,11 +242,11 @@ The "raw" Response object can be accessed by prefixing `.with_raw_response.` to 
 from api_test import APITest
 
 client = APITest()
-response = client.auth.login.with_raw_response.github()
+response = client.with_raw_response.get_status()
 print(response.headers.get('X-My-Header'))
 
-login = response.parse()  # get the object that `auth.login.github()` would have returned
-print(login)
+client = response.parse()  # get the object that `get_status()` would have returned
+print(client)
 ```
 
 These methods return an [`APIResponse`](https://github.com/kishan20-00/api_test/tree/main/src/api_test/_response.py) object.
@@ -260,7 +260,7 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.auth.login.with_streaming_response.github() as response:
+with client.with_streaming_response.get_status() as response:
     print(response.headers.get("X-My-Header"))
 
     for line in response.iter_lines():
