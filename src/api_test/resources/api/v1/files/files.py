@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, Union, Mapping, Optional, cast
+from typing import Dict, Union, Optional
 from datetime import datetime
 from typing_extensions import Literal
 
@@ -16,8 +16,8 @@ from .multipart import (
     MultipartResourceWithStreamingResponse,
     AsyncMultipartResourceWithStreamingResponse,
 )
-from ....._types import Body, Omit, Query, Headers, NotGiven, FileTypes, omit, not_given
-from ....._utils import extract_files, maybe_transform, deepcopy_minimal, async_maybe_transform
+from ....._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
+from ....._utils import maybe_transform, async_maybe_transform
 from ....._compat import cached_property
 from ....._resource import SyncAPIResource, AsyncAPIResource
 from ....._response import (
@@ -30,7 +30,6 @@ from ....._base_client import make_request_options
 from .....types.api.v1 import (
     file_list_params,
     file_create_params,
-    file_ingest_params,
     file_update_params,
     file_presigned_post_params,
     file_retrieve_download_params,
@@ -52,7 +51,7 @@ class FilesResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/api_test-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/kishan20-00/api_test#accessing-raw-response-data-eg-headers
         """
         return FilesResourceWithRawResponse(self)
 
@@ -61,7 +60,7 @@ class FilesResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/api_test-python#with_streaming_response
+        For more information, see https://www.github.com/kishan20-00/api_test#with_streaming_response
         """
         return FilesResourceWithStreamingResponse(self)
 
@@ -413,53 +412,6 @@ class FilesResource(SyncAPIResource):
             cast_to=object,
         )
 
-    def ingest(
-        self,
-        *,
-        file: FileTypes,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> object:
-        """
-        Uploads a file directly to external storage (S3) and returns the upload result.
-        Note: This bypasses metadata creation in the DB.
-
-        Args: file: File to be uploaded. service: Injected storage service dependency.
-        current_user: The authenticated user obtained via dependency.
-
-        Returns: dict: The result of the direct upload operation.
-
-        Raises: HTTPException: 500 If the upload fails.
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        body = deepcopy_minimal({"file": file})
-        files = extract_files(cast(Mapping[str, object], body), paths=[["file"]])
-        # It should be noted that the actual Content-Type header that will be
-        # sent to the server will contain a `boundary` parameter, e.g.
-        # multipart/form-data; boundary=---abc--
-        extra_headers = {"Content-Type": "multipart/form-data", **(extra_headers or {})}
-        return self._post(
-            "/api/v1/files/ingest",
-            body=maybe_transform(body, file_ingest_params.FileIngestParams),
-            files=files,
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=object,
-        )
-
     def presigned_post(
         self,
         *,
@@ -570,7 +522,7 @@ class AsyncFilesResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/api_test-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/kishan20-00/api_test#accessing-raw-response-data-eg-headers
         """
         return AsyncFilesResourceWithRawResponse(self)
 
@@ -579,7 +531,7 @@ class AsyncFilesResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/api_test-python#with_streaming_response
+        For more information, see https://www.github.com/kishan20-00/api_test#with_streaming_response
         """
         return AsyncFilesResourceWithStreamingResponse(self)
 
@@ -931,53 +883,6 @@ class AsyncFilesResource(AsyncAPIResource):
             cast_to=object,
         )
 
-    async def ingest(
-        self,
-        *,
-        file: FileTypes,
-        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-        # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = not_given,
-    ) -> object:
-        """
-        Uploads a file directly to external storage (S3) and returns the upload result.
-        Note: This bypasses metadata creation in the DB.
-
-        Args: file: File to be uploaded. service: Injected storage service dependency.
-        current_user: The authenticated user obtained via dependency.
-
-        Returns: dict: The result of the direct upload operation.
-
-        Raises: HTTPException: 500 If the upload fails.
-
-        Args:
-          extra_headers: Send extra headers
-
-          extra_query: Add additional query parameters to the request
-
-          extra_body: Add additional JSON properties to the request
-
-          timeout: Override the client-level default timeout for this request, in seconds
-        """
-        body = deepcopy_minimal({"file": file})
-        files = extract_files(cast(Mapping[str, object], body), paths=[["file"]])
-        # It should be noted that the actual Content-Type header that will be
-        # sent to the server will contain a `boundary` parameter, e.g.
-        # multipart/form-data; boundary=---abc--
-        extra_headers = {"Content-Type": "multipart/form-data", **(extra_headers or {})}
-        return await self._post(
-            "/api/v1/files/ingest",
-            body=await async_maybe_transform(body, file_ingest_params.FileIngestParams),
-            files=files,
-            options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
-            ),
-            cast_to=object,
-        )
-
     async def presigned_post(
         self,
         *,
@@ -1101,9 +1006,6 @@ class FilesResourceWithRawResponse:
         self.delete_purge = to_raw_response_wrapper(
             files.delete_purge,
         )
-        self.ingest = to_raw_response_wrapper(
-            files.ingest,
-        )
         self.presigned_post = to_raw_response_wrapper(
             files.presigned_post,
         )
@@ -1137,9 +1039,6 @@ class AsyncFilesResourceWithRawResponse:
         )
         self.delete_purge = async_to_raw_response_wrapper(
             files.delete_purge,
-        )
-        self.ingest = async_to_raw_response_wrapper(
-            files.ingest,
         )
         self.presigned_post = async_to_raw_response_wrapper(
             files.presigned_post,
@@ -1175,9 +1074,6 @@ class FilesResourceWithStreamingResponse:
         self.delete_purge = to_streamed_response_wrapper(
             files.delete_purge,
         )
-        self.ingest = to_streamed_response_wrapper(
-            files.ingest,
-        )
         self.presigned_post = to_streamed_response_wrapper(
             files.presigned_post,
         )
@@ -1211,9 +1107,6 @@ class AsyncFilesResourceWithStreamingResponse:
         )
         self.delete_purge = async_to_streamed_response_wrapper(
             files.delete_purge,
-        )
-        self.ingest = async_to_streamed_response_wrapper(
-            files.ingest,
         )
         self.presigned_post = async_to_streamed_response_wrapper(
             files.presigned_post,
